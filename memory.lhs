@@ -57,6 +57,12 @@ First I will define the tiles of the game
 >                       " \ / ",
 >                       "  -  "]
 
+> getFace Star       = ["  |  ",
+>                       " \|/ ",
+>                       "--o--",
+>                       " /|\ ",
+>                       "  |  "]
+
 > board1 = [[Square, BackFace, Triangle, Square], [BackFace, Diamon, Diamond, Triangle]]
 
 > matchTiles    :: Board -> Coordinate -> Coordinate -> Bool
