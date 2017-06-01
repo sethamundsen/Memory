@@ -57,10 +57,15 @@ First I will define the tiles of the game
 >                       " \ / ",
 >                       "  -  "]
 
-> board1 = [[Square, BackFace, Triangle], [BackFace, Diamon, Diamon], [Square, Triangle, Diamond]]
+> board1 = [[Square, BackFace, Triangle, Square], [BackFace, Diamon, Diamond, Triangle]]
 
-> match     :: Board -> Coordinate -> Bool
+> matchTiles    :: Board -> Coordinate -> Coordinate -> Bool
+> matchTiles board coord1 coord2 = t1 == t2
+>                                  where t1 = getTile board coord1
+>                                        t2 = getTile board coord2
 
+> getTile   :: Board -> Coordinate -> Tile
+> getTile board (row, col) = \y -> (\x -> board !! col) !! row
 
 
 Now to print Tiles correctly
