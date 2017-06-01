@@ -91,8 +91,7 @@ How will the game know that all the matches have been made?
 
 Next we need to be able to see the current state of the board
 
- showRow               :: Row -> String
-
+> showRow               :: Row -> String
 > showRow row            = putStr (unlines (map (concat . intersperse "|") (transpose (showRow getFace (row)
 
 > --unlines (intersperse row (map row board))
@@ -100,7 +99,10 @@ Next we need to be able to see the current state of the board
 >                          --           col   = length(board)
 >                          --           row   = concat . intersperse "|" width
 
-
+> showBoard      :: Board -> IO()
+> showBoard board = putStr (intersperse hsep (map showRow board))
+>                   where hsep = concat (intersperse "+" (replicate (width) '-'))
+>                         width = length (head board)
 
 >{-
 > showBoard              :: Board -> String
