@@ -23,37 +23,65 @@ and 6x6
 
 First I will define the tiles of the game
 
-> data Tile = BackFace  
->           | Square  
->           | Triangle
->             deriving(Show)
+> data Tile          = BackFace  
+>                    | Square  
+>                    | Triangle
+>                    | Diamond
+>                    | Star
+>                      deriving(Eq, Show)
 
+> type Row           = [Tile]
+> type Board         = [Row]
+> type Coordinate    = (Int, Int)
 
-> isA :: Tile -> [String]
-> isA BackFace = ["=====",
->                 "|===|",
->                 "|===|",
->                 "|===|",
->                 "====="]
+> getFace           :: Tile -> [String]
+> getFace BackFace   = ["=====",
+>                       "|===|",
+>                       "|===|",
+>                       "|===|",
+>                       "====="]
 
-> isA Square   = ["-----",
->                 "|   |",
->                 "|   |",
->                 "|   |",
->                 "-----"] 
+> getFace Square     = ["-----",
+>                       "|   |",
+>                       "|   |",
+>                       "|   |",
+>                       "-----"] 
 
-> isA Triangle = ["_____",
->                 "|   /",
->                 "|  / ",
->                 "| /  ",
->                 "|/   "]
+> getFace Triangle   = ["_____",
+>                       "|   /",
+>                       "|  / ",
+>                       "| /  ",
+>                       "|/   "]
+
+> getFace Diamond    = [" --- ", 
+>                       "/   \\",
+>                       "\\   /",
+>                       " \\ / ",
+>                       "  -  "]
+
+> getFace Star       = ["  |  ",
+>                       " \\|/ ",
+>                       "--o--",
+>                       " /|\\ ",
+>                       "  |  "]
+
+> board1 = [[Square, BackFace, Triangle, Square], [BackFace, Diamond, Diamond, Triangle]]
+
+> matchTiles    :: Board -> Coordinate -> Coordinate -> Bool
+> matchTiles board coord1 coord2 = t1 == t2
+>                                  where t1 = getTile board coord1
+>                                        t2 = getTile board coord2
+
+> getTile                   :: Board -> Coordinate -> Tile
+> getTile board (row, col)   = board !! col !! row
+
 
 
 
 Now to print Tiles correctly
 
 > showTile  :: Tile -> IO()
-> showTile t = mapM_ putStrLn (isA t) 
+> showTile t = mapM_ putStrLn (getFace t) 
 
 And to prove that it works..!
 
@@ -62,23 +90,3 @@ And to prove that it works..!
 > tile_test3 = showTile Triangle
 
 
-Now that the tiles constructed, its time to make rows out of them
-
-> type Row = [Tile]
-> row1 = [BackFace, BackFace]
-
- showRow   :: [Tile] -> [[String]]
- showRow    = putStrLn .  mapM showTile
-
-
-
-
-
-
- type Grid          = [Row]
-
-
- Grid1              = [BackFace, BackFace, BackFace, BackFace]
-
- test1              = mapM showTile (Grid1)
- test2              = 
