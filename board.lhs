@@ -1,14 +1,9 @@
 
+> module Board where
+
 board.lhs is a collection of board utility functions
 and associated data types that will be used to play
 the game of... 
- 
- mm mm    eeee    mm mm    oooo          y  y
-m  m  m  ee  ee  m  m  m  oo  oo  r rr  y  yy
-m  m  m  e  ee   m  m  m  o    o  rr     yy y
-m  m  m  ee      m  m  m  oo  oo  r         y
-m  m  m   eee    m  m  m   oooo   r      yyy
-
 
 A board is made up of a set of Tiles organized in a 
 grid. Tiles represent a two sided card. One side is
@@ -20,6 +15,11 @@ matching Tile.
 > import Data.List
 
 
+In Memory, a game is played on a board and a board is
+thought of as a list of Rows. A Row is thought of as 
+as list of Tiles and the Tiles are unique lists of
+Strings.
+
 > data Tile         = BackFace
 >                   | Square
 >                   | Triangle
@@ -29,6 +29,8 @@ matching Tile.
 > type Row          = [Tile]
 > type Board        = [Row]
 
+
+Lets build some Tiles!
 
 > showTile         :: Tile -> [String]
 > showTile BackFace = ["=====",
@@ -62,25 +64,29 @@ matching Tile.
 >                      "  |  "]
 
 
+Now that we have Tiles to play with, we need to gather
+them into Rows.
+
 > showRow       :: Row -> [String]
-> showRow r      = map (concat . intersperse " | ") (transpose (concat ' ' (map showTile r)))
+> showRow r      = format( map (concat . intersperse " | ") (transpose (map showTile r)))
 
- showBoard     :: Board -> [String]
- showBoard b    = concat (intersperse[tb, mb, tb] (map showRow b))
-                  where tb             = concat( intersperse " | " (replicate n (replicate 6 ' ')))
-                        mb             = concat( intersperse "-+-" (replicate n (replicate 6 '-')))
-                        n              = length(head b)
 
-Constructed with Mark Jones during office hours
+And now to gather the Rows into a Board. 
 
 > showBoard     :: Board -> [String]
 > showBoard b    = concat (intersperse[tb, mb, tb] (map showRow b))
 >                  where tb              = hbar " | " ' '
 >                        mb              = hbar "-+-" '-'
->                        hbar csep sp    = concat (intersperse csep (replicate n (replicate 6 sp)))
->                        n               = length (head b)
+>                        hbar csep sp    = concat (intersperse csep (replicate n (replicate 7 sp)))
+>                        n               = length (head b) 
 
-End  
+The format function just adds some padding to the front
+of each of the Rows. this is to allow the bars that 
+separate each of the Rows to extend beyond the Tile just
+a little bit.
 
-> solution_board = [[Square, Star, Triangle, Triangle],[Diamond, Square, Diamond, Star]]
+> format        :: [String] -> [String]
+> format b       = map ("  " ++) b
+
+
 
