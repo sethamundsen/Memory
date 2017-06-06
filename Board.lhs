@@ -25,10 +25,12 @@ Strings.
 >                   | Triangle
 >                   | Diamond
 >                   | Star
+>                     deriving (Eq, Show)
 
 > type Row          = [Tile]
 > type Board        = [Row]
-
+> type Mask         = [[Bool]]
+> type Coordinate   = (Int, Int)
 
 Lets build some Tiles!
 
@@ -63,12 +65,11 @@ Lets build some Tiles!
 >                      " /|\\ ",
 >                      "  |  "]
 
-
 Now that we have Tiles to play with, we need to gather
 them into Rows.
 
 > showRow       :: Row -> [String]
-> showRow r      = format( map (concat . intersperse " | ") (transpose (map showTile r)))
+> showRow r      = map (concat . intersperse " | ") (transpose (map showTile r))
 
 
 And now to gather the Rows into a Board. 
@@ -77,7 +78,7 @@ And now to gather the Rows into a Board.
 > showBoard b    = concat (intersperse[tb, mb, tb] (map showRow b))
 >                  where tb              = hbar " | " ' '
 >                        mb              = hbar "-+-" '-'
->                        hbar csep sp    = concat (intersperse csep (replicate n (replicate 7 sp)))
+>                        hbar csep sp    = concat (intersperse csep (replicate n (replicate 5 sp)))
 >                        n               = length (head b) 
 
 The format function just adds some padding to the front
@@ -85,8 +86,34 @@ of each of the Rows. this is to allow the bars that
 separate each of the Rows to extend beyond the Tile just
 a little bit.
 
-> format        :: [String] -> [String]
-> format b       = map ("  " ++) b
+ format        :: [String] -> [String]
+ format b       = map (" " ++) b
+
+
+
+
+
+> solution           = [[Square, Star, Triangle], [Triangle, Square, Star], [Star, Star, Triangle], [Diamond, Triangle, Diamond]]
+
+> mask               = initialMask solution
+
+
+> initialMask       :: Board -> Mask
+> initialMask        = map( map( \f -> False))
+
+> hide              :: Board -> Mask -> Board
+> hide               = zipWith( zipWith(\t b -> if b then t else BackFace))
+
+> upd               :: Int -> (a -> a) -> [a] -> [a]
+> upd i f xs         = as ++ [f x] ++ bs
+>                      where (as, x:bs) = splitAt i xs
+
+> toggle            :: Coordinate -> Mask -> Mask
+> toggle (row, col)  = upd col (upd row not)
+
+> isMatch           :: Tile -> Tile -> Bool
+> isMatch t1 t2      = if t1 == t2 then True else False
+
 
 
 
