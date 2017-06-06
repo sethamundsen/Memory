@@ -29,7 +29,7 @@ an even number of spaces.
 
 > module Memory where
 
-> import Data.Char(isDigit, digitToInt)
+> import Data.Char
 > import Board
 
 
@@ -39,49 +39,44 @@ specific Tile in the Solution Board. When a Bool in the Mask is True, the Tile
 in the Solution Board that corresponds to the Bool will be visible. When that
 Bool is False, the Tile that it Maps to will not be visible to the player.
 
+> cls                   :: IO()
+> cls                    = putStr "\ESC[2J"
 
 > newline               :: IO()
 > newline                = putChar '\n'
 
- getCoordinates        :: IO (Int, Int)
- getCoordinates         = do row <- getLine
-                             col <- getLine
-                             if isDigit row && isDigit col then return (digitToInt row, digitToInt col)
-                                                           else do putStrLn "Error: Invalid coordinate for Tile selection"
-                                                                   getCoordinates
-                           
+> getInt                :: String -> IO Int
+> getInt                 = do s <- getLine
+>                             if not(null s) && all isDigit s then return (read s)
+>                                                             else do putStrln "Invalid input"
+>                                                                     getInt
                                
+> getCoord               = do putStr "Enter row: "
+>                             r <- getInt
+>                             putStr "Enter col: "
+>                             c <- getInt
+>                             return (r, c)
 
- toCoord               :: Int -> Int -> Coordinate
- toCoord row col        = (row, col)
 
 > play                  :: IO()
-> play                   = do newline
->                             putStrLn "Welcone to the great game of Memory!"
->                             newline
->                             putStrLn "How to play:"
->                             putStrLn "A turn consists of selecting two Tiles, one at a time. If the selected Tiles are a match"
->                             putStrLn "the turn passes with those Tiles remaining face up in the following turns. If the selected"
->                             putStrLn "cards are not a match, the flip back over and you get to try again!"
->                             newline
->                             putStrLn "Cards are selected by their row/column coordinates. So, lets gets started!"
->                             play solution mask
+> play                   = do cls
+>                             putStrLn "Wecome to the great game of Memory!! To play, select cards to flip based on their row/col 
+>                                       coordinates.  If the two selections are a match, they will stay flipped. If they are not 
+>                                       a match, the cards will flip back over and the turn passes."
+>                             putStrLn "NOTE: The first row is the 0th row and the first col is the 0th col"
+>                             play' solution mask
 
 
-
- play'                 :: Board -> Mask -> IO()
- play' solution mask    = do newline
-                             putStrLn( unlines( showBoard( hide solution mask)))
-                             newline
-                             newline
-                             putStr "Select a card (row/col): "
-                             coord1 <- getCoordinates
-                             newline
-                             putStrLn( unlines( showBoard( hide solution( toggle coord1 mask))))
-                             putStr "Select another card (row/col): "
-                             coord2 <- getCoordinates
-                             newline
-                             putStrLn( unlines( showBoard (hide solution( toggle coord1 (toggle coord1 mask)))))
-
-                             if play' solution mask
- 
+> play'                 :: Board -> Mask -> IO()
+> play' solution mask    = do cls
+>                             putStr( unlines( showBoard( hide solution mask)))
+>                             c1 = getCoord
+>                             cls
+>                             putStr( unlines( showBoard( hide solution (toggle c1 mask))))
+>                             c2 = getCoord
+>                             cls
+>                             putStrLn( unlines( showBoard (hide solution( toggle c2 (toggle c1 mask)))))
+>                             if c1 == c2 then do putStr "Match!"
+>                                                 play' solution (toggle c2( toggle c1 mask))
+>                                         else do putStr "Not a match!"
+>                                                 play' solution mask
