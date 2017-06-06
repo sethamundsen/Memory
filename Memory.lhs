@@ -29,7 +29,7 @@ an even number of spaces.
 
 > module Memory where
 
-> import Prelude
+> import Data.Char(isDigit, digitToInt)
 > import Board
 
 
@@ -46,7 +46,11 @@ Bool is False, the Tile that it Maps to will not be visible to the player.
  getCoordinates        :: IO (Int, Int)
  getCoordinates         = do row <- getLine
                              col <- getLine
-                             return (row, col)
+                             if isDigit row && isDigit col then return (digitToInt row, digitToInt col)
+                                                           else do putStrLn "Error: Invalid coordinate for Tile selection"
+                                                                   getCoordinates
+                           
+                               
 
  toCoord               :: Int -> Int -> Coordinate
  toCoord row col        = (row, col)
