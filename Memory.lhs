@@ -39,8 +39,9 @@ specific Tile in the Solution Board. When a Bool in the Mask is True, the Tile
 in the Solution Board that corresponds to the Bool will be visible. When that
 Bool is False, the Tile that it Maps to will not be visible to the player.
 
-> cls                   :: IO()
-> cls                    = putStr "\ESC[2J"
+
+
+
 
 > newline               :: IO()
 > newline                = putChar '\n'
@@ -58,30 +59,48 @@ Bool is False, the Tile that it Maps to will not be visible to the player.
 
 
 > getTile               :: Coordinate -> Tile
-> getTile (row, col)     = return ((solution !! row) !! col)
+> getTile (row, col)     = solution !! row !! col
 
+> intro                 :: IO()
+> intro                  = mapM_ putStrLn ["Wecome to the great game of Memory!! To play, select cards to flip based on their row/col", 
+>                                          "coordinates.  If the two selections are a match, they will stay flipped. If they are not", 
+>                                          "a match, the cards will flip back over and the turn passes.",
+>                                          "NOTE: The first row is the 0th row and the first col is the 0th col",
+>                                          "-----------------------------------------------------------------------------------------"]
 
 > play                  :: IO()
 > play                   = do cls
->                             mapM_ putStrLn ["Wecome to the great game of Memory!! To play, select cards to flip based on their row/col", 
->                                             "coordinates.  If the two selections are a match, they will stay flipped. If they are not", 
->                                             "a match, the cards will flip back over and the turn passes.",
->                                             "NOTE: The first row is the 0th row and the first col is the 0th col"]
+>                             goto 1 1
+>                             cls 
 >                             play' solution mask
-
 
 > play'                 :: Board -> Mask -> IO()
 > play' solution mask    = do cls
+>                             goto 1 1
+>                             cls
+>                             intro
+>                           
 >                             putStr( unlines( showBoard( hide solution mask)))
 >                             c1 <- getCoord
+>                             let t1 = getTile c1
+>                             
 >                             cls
->                             t1 <- getTile c1
-
+>                             goto 1 1 
+>                             cls
+>                             intro
+>                             
 >                             putStr( unlines( showBoard( hide solution (toggle c1 mask))))
 >                             c2 <- getCoord
+>                             let t2 = getTile c2
+>                             
 >                             cls
+>                             goto 1 1
+>                             cls
+>                             intro
+>                             
 >                             putStrLn( unlines( showBoard (hide solution( toggle c2 (toggle c1 mask)))))
->                             if c1 == c2 then do putStr "Match!"
+>
+>                             if t1 == t2 then do putStr "Match!\n"
 >                                                 play' solution (toggle c2( toggle c1 mask))
->                                         else do putStr "Not a match!"
+>                                         else do putStr "Not a match!\n"
 >                                                 play' solution mask

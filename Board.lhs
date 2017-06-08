@@ -87,33 +87,40 @@ of each of the Rows. this is to allow the bars that
 separate each of the Rows to extend beyond the Tile just
 a little bit.
 
- format        :: [String] -> [String]
- format b       = map (" " ++) b
+ format                 :: [String] -> [String]
+ format b                = map (" " ++) b
 
 
+ resetScreen            = cls . (goto 1 1) . cls
+
+ goto                  :: IO()
+
+> goto x y               = putStr ("\ESC[" ++ show y ++ ";" ++ show x ++ "H")
+
+ cls                   :: IO()
+
+> cls                    = putStr "\ESC[2J"
+
+> solution               = [[Square, Star, Triangle], [Triangle, Square, Star], [Star, Star, Triangle], [Diamond, Triangle, Diamond]]
+
+> mask                   = initialMask solution
 
 
+> initialMask           :: Board -> Mask
+> initialMask            = map( map( \f -> False))
 
-> solution           = [[Square, Star, Triangle], [Triangle, Square, Star], [Star, Star, Triangle], [Diamond, Triangle, Diamond]]
+> hide                  :: Board -> Mask -> Board
+> hide                   = zipWith( zipWith(\t b -> if b then t else BackFace))
 
-> mask               = initialMask solution
+> upd                   :: Int -> (a -> a) -> [a] -> [a]
+> upd i f xs             = as ++ [f x] ++ bs
+>                          where (as, x:bs) = splitAt i xs
 
+> toggle                :: Coordinate -> Mask -> Mask
+> toggle (row, col)      = upd col (upd row not)
 
-> initialMask       :: Board -> Mask
-> initialMask        = map( map( \f -> False))
-
-> hide              :: Board -> Mask -> Board
-> hide               = zipWith( zipWith(\t b -> if b then t else BackFace))
-
-> upd               :: Int -> (a -> a) -> [a] -> [a]
-> upd i f xs         = as ++ [f x] ++ bs
->                      where (as, x:bs) = splitAt i xs
-
-> toggle            :: Coordinate -> Mask -> Mask
-> toggle (row, col)  = upd col (upd row not)
-
-> isMatch           :: Tile -> Tile -> Bool
-> isMatch t1 t2      = if t1 == t2 then True else False
+> isMatch               :: Tile -> Tile -> Bool
+> isMatch t1 t2          = if t1 == t2 then True else False
 
 
 
