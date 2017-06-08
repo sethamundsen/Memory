@@ -34,6 +34,7 @@ Strings.
 
 Lets build some Tiles!
 
+
 > showTile         :: Tile -> [String]
 > showTile BackFace = ["=====",
 >                      "|===|",

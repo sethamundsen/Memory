@@ -46,34 +46,39 @@ Bool is False, the Tile that it Maps to will not be visible to the player.
 > newline                = putChar '\n'
 
 > getInt                :: String -> IO Int
-> getInt                 = do s <- getLine
+> getInt prompt          = do putStr prompt
+>                             s <- getLine
 >                             if not(null s) && all isDigit s then return (read s)
->                                                             else do putStrln "Invalid input"
->                                                                     getInt
-                               
-> getCoord               = do putStr "Enter row: "
->                             r <- getInt
->                             putStr "Enter col: "
->                             c <- getInt
+>                                                             else getInt "Invalid input: "
+        
+> getCoord              :: IO Coordinate
+> getCoord               = do r <- getInt "Enter row: "
+>                             c <- getInt "Enter col: "
 >                             return (r, c)
+
+
+> getTile               :: Coordinate -> Tile
+> getTile (row, col)     = return ((solution !! row) !! col)
 
 
 > play                  :: IO()
 > play                   = do cls
->                             putStrLn "Wecome to the great game of Memory!! To play, select cards to flip based on their row/col 
->                                       coordinates.  If the two selections are a match, they will stay flipped. If they are not 
->                                       a match, the cards will flip back over and the turn passes."
->                             putStrLn "NOTE: The first row is the 0th row and the first col is the 0th col"
+>                             mapM_ putStrLn ["Wecome to the great game of Memory!! To play, select cards to flip based on their row/col", 
+>                                             "coordinates.  If the two selections are a match, they will stay flipped. If they are not", 
+>                                             "a match, the cards will flip back over and the turn passes.",
+>                                             "NOTE: The first row is the 0th row and the first col is the 0th col"]
 >                             play' solution mask
 
 
 > play'                 :: Board -> Mask -> IO()
 > play' solution mask    = do cls
 >                             putStr( unlines( showBoard( hide solution mask)))
->                             c1 = getCoord
+>                             c1 <- getCoord
 >                             cls
+>                             t1 <- getTile c1
+
 >                             putStr( unlines( showBoard( hide solution (toggle c1 mask))))
->                             c2 = getCoord
+>                             c2 <- getCoord
 >                             cls
 >                             putStrLn( unlines( showBoard (hide solution( toggle c2 (toggle c1 mask)))))
 >                             if c1 == c2 then do putStr "Match!"
