@@ -68,6 +68,12 @@ Bool is False, the Tile that it Maps to will not be visible to the player.
 >                                          "NOTE: The first row is the 0th row and the first col is the 0th col",
 >                                          "-----------------------------------------------------------------------------------------"]
 
+> setup                 :: IO()
+> setup                  = do cls
+>                             goto 1 1
+>                             cls
+>                             intro
+
 > play                  :: IO()
 > play                   = do cls
 >                             goto 1 1
@@ -75,32 +81,24 @@ Bool is False, the Tile that it Maps to will not be visible to the player.
 >                             play' solution mask
 
 > play'                 :: Board -> Mask -> IO()
-> play' solution mask    = do cls
->                             goto 1 1
->                             cls
->                             intro
->                           
->                             putStr( unlines( showBoard( hide solution mask)))
->                             c1 <- getCoord
->                             let t1 = getTile c1
->                             
->                             cls
->                             goto 1 1 
->                             cls
->                             intro
->                             
->                             putStr( unlines( showBoard( hide solution (toggle c1 mask))))
->                             c2 <- getCoord
->                             let t2 = getTile c2
->                             
->                             cls
->                             goto 1 1
->                             cls
->                             intro
->                             
->                             putStrLn( unlines( showBoard (hide solution( toggle c2 (toggle c1 mask)))))
->
->                             if t1 == t2 then do putStr "Match!\n"
->                                                 play' solution (toggle c2( toggle c1 mask))
->                                         else do putStr "Not a match!\n"
->                                                 play' solution mask
+> play' solution mask    = do if and (map and mask) then putStrLn "Congratulations! You won!"
+>                                                   else do setup
+>                                                           putStr( unlines( showBoard( hide solution mask)))
+>                                                           c1 <- getCoord
+>                                                           let t1 = getTile c1 
+>                                                           setup
+>                                                           putStr( unlines( showBoard( hide solution (toggle c1 mask))))
+>                                                           c2 <- getCoord
+>                                                           let t2 = getTile c2
+>                                                           setup
+>                                                           putStrLn( unlines( showBoard (hide solution( toggle c2 (toggle c1 mask)))))
+>                                                           if t1 == t2 then do mapM_ putStrLn ["Match!", "Press any key to continue:"]
+>                                                                               getLine
+>                                                                               play' solution (toggle c2( toggle c1 mask))
+>                                                                       else do mapM_ putStrLn ["Not a match!", "Press any key to continue:"]
+>                                                                               x <- getLine
+>                                                                               if x == "otootsots" then do setup
+>                                                                                                           putStrLn( unlines( showBoard solution)) 
+>                                                                                                           getChar
+>                                                                                                           play' solution mask
+>                                                                                                   else play' solution mask

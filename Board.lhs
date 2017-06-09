@@ -82,28 +82,22 @@ And now to gather the Rows into a Board.
 >                        hbar csep sp    = concat (intersperse csep (replicate n (replicate 5 sp)))
 >                        n               = length (head b) 
 
-The format function just adds some padding to the front
-of each of the Rows. this is to allow the bars that 
-separate each of the Rows to extend beyond the Tile just
-a little bit.
-
- format                 :: [String] -> [String]
- format b                = map (" " ++) b
-
-
- resetScreen            = cls . (goto 1 1) . cls
-
- goto                  :: IO()
-
 > goto x y               = putStr ("\ESC[" ++ show y ++ ";" ++ show x ++ "H")
 
- cls                   :: IO()
 
+> cls                   :: IO()
 > cls                    = putStr "\ESC[2J"
 
-> solution               = [[Square, Star, Triangle], [Triangle, Square, Star], [Star, Star, Triangle], [Diamond, Triangle, Diamond]]
+> solution               = [[Square, Star, Triangle, Diamond], 
+>                           [Diamond, Square, Star, Triangle],
+>                           [Square, Diamond, Triangle, Star], 
+>                           [Star, Diamond, Triangle, Square]]
+
+> solution1              = [[Triangle, Square],
+>                           [Square, Triangle]]
 
 > mask                   = initialMask solution
+> mask1                  = initialMask solution1
 
 
 > initialMask           :: Board -> Mask
@@ -117,7 +111,7 @@ a little bit.
 >                          where (as, x:bs) = splitAt i xs
 
 > toggle                :: Coordinate -> Mask -> Mask
-> toggle (row, col)      = upd col (upd row not)
+> toggle (row, col)      = upd row (upd col not)
 
 > isMatch               :: Tile -> Tile -> Bool
 > isMatch t1 t2          = if t1 == t2 then True else False
