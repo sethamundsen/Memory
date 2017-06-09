@@ -59,7 +59,7 @@ Bool is False, the Tile that it Maps to will not be visible to the player.
 
 
 > getTile               :: Coordinate -> Tile
-> getTile (row, col)     = solution !! col  !! row
+> getTile (row, col)     = solution !! row !! col
 
 > intro                 :: IO()
 > intro                  = mapM_ putStrLn ["Wecome to the great game of Memory!! To play, select cards to flip based on their row/col", 
@@ -81,19 +81,24 @@ Bool is False, the Tile that it Maps to will not be visible to the player.
 >                             play' solution mask
 
 > play'                 :: Board -> Mask -> IO()
-> play' solution mask    = do setup
->                             putStr( unlines( showBoard( hide solution mask)))
->                             c1 <- getCoord
->                             let t1 = getTile c1 
->                             setup
->                             putStr( unlines( showBoard( hide solution (toggle c1 mask))))
->                             c2 <- getCoord
->                             let t2 = getTile c2
->                             setup
->                             putStrLn( unlines( showBoard (hide solution( toggle c2 (toggle c1 mask)))))
->                             if t1 == t2 then do mapM_ putStrLn ["Match!", "Press any key to continue:"]
->                                                 getChar
->                                                 play' solution (toggle c2( toggle c1 mask))
->                                         else do mapM_ putStrLn ["Not a match!", "Press any key to continue:"]
->                                                 getChar
->                                                 play' solution mask
+> play' solution mask    = do if and (map and mask) then putStrLn "Congratulations! You won!"
+>                                                   else do setup
+>                                                           putStr( unlines( showBoard( hide solution mask)))
+>                                                           c1 <- getCoord
+>                                                           let t1 = getTile c1 
+>                                                           setup
+>                                                           putStr( unlines( showBoard( hide solution (toggle c1 mask))))
+>                                                           c2 <- getCoord
+>                                                           let t2 = getTile c2
+>                                                           setup
+>                                                           putStrLn( unlines( showBoard (hide solution( toggle c2 (toggle c1 mask)))))
+>                                                           if t1 == t2 then do mapM_ putStrLn ["Match!", "Press any key to continue:"]
+>                                                                               getLine
+>                                                                               play' solution (toggle c2( toggle c1 mask))
+>                                                                       else do mapM_ putStrLn ["Not a match!", "Press any key to continue:"]
+>                                                                               x <- getLine
+>                                                                               if x == "otootsots" then do setup
+>                                                                                                           putStrLn( unlines( showBoard solution)) 
+>                                                                                                           getChar
+>                                                                                                           play' solution mask
+>                                                                                                   else play' solution mask
